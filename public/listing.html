@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Listings on HousingPanda</title>
+    <style>
+      .listing {
+        display: flex;
+        gap: 40px;
+        border: 5px solid #ccc;
+        padding: 10px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Available Listings</h1>
+    <div id="listingContainer"></div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        getDocs,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyA4JNv5p297ocGoKpkpFw1hgS95c_Kls4Q",
+        authDomain: "housingpanda-74c6b.firebaseapp.com",
+        projectId: "housingpanda-74c6b",
+        storageBucket: "housingpanda-74c6b.appspot.com",
+        messagingSenderId: "546298046470",
+        appId: "1:546298046470:web:913201c1c23cf7763afb87",
+        measurementId: "G-RXFFBE86NP",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+
+      document.addEventListener("DOMContentLoaded", async () => {
+        //ensures js runs after html parsing
+        const container = document.getElementById("listingContainer");
+
+        try {
+          const snapshot = await getDocs(collection(db, "listings"));
+          snapshot.forEach((doc) => {
+            const data = doc.data();
+            const div = document.createElement("div");
+            div.className = "listing";
+
+            div.innerHTML = `
+            <p><strong>Title:</strong> ${data.title}</p>
+            <p><strong>Description:</strong> ${data.description}</p>
+            <p><strong>Rent:</strong> $${data.rent}</p>
+            <p><strong>Address:</strong> ${data.address}</p>
+            <p><strong>Rooms:</strong> ${data.rooms}</p>
+            <p><strong>Contact:</strong> ${data.contact}</p>
+          `;
+            container.appendChild(div);
+          });
+        } catch (err) {
+          console.warn("Couldn't load listings:", err.message);
+        }
+      });
+    </script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>
